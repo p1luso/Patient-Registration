@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
-import { usePatients } from '../../context/patientContext';
+import React, { useState } from "react";
+import { usePatients } from "../../context/patientContext";
+import { toast } from "react-toastify";
+import "./styles.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const PatientForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
+    fullName: "",
+    email: "",
+    phoneNumber: "",
     documentPhoto: null, // Cambié esto a null para ser consistente con los archivos
   });
+
+  const handleClose = () => {
+    setFormData({
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      documentPhoto: null,
+    });
+    onClose();
+  };
 
   const { newPatient } = usePatients();
 
@@ -22,42 +35,54 @@ const PatientForm = ({ onClose }) => {
   const handleFileChange = (e) => {
     setFormData({
       ...formData,
-      documentPhoto: e.target.files[0], // Almacenar solo el archivo
+      documentPhoto: e.target.files[0], // Asegura que sea el archivo, no solo la ruta
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const form = new FormData();
-    form.append('fullName', formData.fullName);
-    form.append('email', formData.email);
-    form.append('phoneNumber', formData.phoneNumber);
-
-    // Si hay una foto, la agregamos al FormData
-    if (formData.documentPhoto) {
-      form.append('documentPhoto', formData.documentPhoto);
-    }
+    const formDataToSend = new FormData();
+    formDataToSend.append("fullName", formData.fullName);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("phoneNumber", formData.phoneNumber);
+    formDataToSend.append("documentPhoto", formData.documentPhoto);
 
     try {
-      const response = await newPatient(form);
-      console.log(response);
+      const response = await newPatient(formDataToSend);
 
-      if (!response.ok) {
-        throw new Error('Error al agregar el paciente');
+      if (response.success) {
+        toast.success("Paciente registrado correctamente", { position: "top-right" });
+        onClose();
+      } else {
+        toast.error(response.message || "Ocurrió un error inesperado", { position: "top-right" });
       }
-
-      onClose();
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
+      toast.error("Ocurrió un error inesperado", { position: "top-right" });
     }
   };
 
   return (
     <div className="patient-form-overlay">
       <div className="patient-form-container">
+        <button 
+          onClick={handleClose}
+          className="close-button"
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            background: "transparent",
+            border: "none",
+            fontSize: "1.5rem",
+            cursor: "pointer"
+          }}
+        >
+          &times;
+        </button>
         <h2>Agregar Paciente</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div>
             <label htmlFor="fullName">Nombre Completo</label>
             <input
@@ -97,12 +122,16 @@ const PatientForm = ({ onClose }) => {
               type="file"
               id="documentPhoto"
               name="documentPhoto"
+              accept="image/jpeg"
               onChange={handleFileChange}
+              required
             />
           </div>
           <div>
             <button type="submit">Agregar</button>
-            <button type="button" onClick={onClose}>Cancelar</button>
+            <button type="button" onClick={onClose}>
+              Cancelar
+            </button>
           </div>
         </form>
       </div>

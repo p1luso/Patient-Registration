@@ -3,6 +3,7 @@ const fs = require('fs');
 const pool = require('../config/db');
 const logger = require('../logs');
 const sendConfirmationEmail = require('../middlewares/mail');
+const upload = require('../middlewares/upload'); // Importa Multer
 
 // Asegurémonos de que el directorio de archivos exista
 const ensureDirectoryExists = (dirPath) => {
@@ -11,25 +12,20 @@ const ensureDirectoryExists = (dirPath) => {
     }
 };
 
+
 const registerPatient = async (req, res) => {
-    const { fullName, email, phoneNumber } = req.body;
-    
-    if (!fullName || !email || !phoneNumber || !req.files || !req.files.documentPhoto) {
-        return res.status(400).json({ message: 'Todos los campos son requeridos y debe incluir una foto del documento' });
-    }
-    const documentPhoto = req.files.documentPhoto;
-
-    if (documentPhoto.mimetype !== 'image/jpeg') {
-        return res.status(400).json({ message: 'Solo se permite subir imágenes en formato JPG' });
-    }
-
-    const uploadDir = path.join(__dirname, '..', 'files');
-    ensureDirectoryExists(uploadDir);
-
-    const fileName = `${Date.now()}_${documentPhoto.name}`;
-    const filePath = path.join(uploadDir, fileName);
-
     try {
+        const { fullName, email, phoneNumber } = req.body;
+        const documentPhoto = req.file;
+
+        if (!fullName || !email || !phoneNumber || !documentPhoto) {
+            return res.status(400).json({ message: 'Todos los campos son requeridos y debe incluir una foto' });
+        }
+
+        // Ruta donde se guardó la imagen
+        const fileUrl = `http://localhost:5000/uploads/${documentPhoto.filename}`;
+
+        // Verificar si el paciente ya existe
         const existingPatientQuery = 'SELECT * FROM patients WHERE email = $1 OR phone_number = $2';
         const result = await pool.query(existingPatientQuery, [email, phoneNumber]);
 
@@ -37,26 +33,21 @@ const registerPatient = async (req, res) => {
             return res.status(400).json({ message: 'Ya existe un paciente con ese correo electrónico o número de teléfono' });
         }
 
-        // Mover el archivo a la carpeta de destino
-        documentPhoto.mv(filePath, async (err) => {
-            if (err) {
-                console.error('Error al mover el archivo:', err);
-                return res.status(500).json({ message: 'Error al guardar la foto del documento' });
-            }
+        // Insertar el paciente en la base de datos
+        const insertQuery = 'INSERT INTO patients (full_name, email, phone_number, document_photo) VALUES ($1, $2, $3, $4) RETURNING *';
+        const insertResult = await pool.query(insertQuery, [fullName, email, phoneNumber, fileUrl]);
 
-            const fileUrl = `http://localhost:5000/files/${fileName}`;
+        const patient = insertResult.rows[0];
 
-            // Insertar el paciente en la base de datos
-            const insertQuery = 'INSERT INTO patients (full_name, email, phone_number, document_photo) VALUES ($1, $2, $3, $4) RETURNING *';
-            const insertResult = await pool.query(insertQuery, [fullName, email, phoneNumber, fileUrl]);
-
-            const patient = insertResult.rows[0];
-
-            await sendConfirmationEmail({email: patient.email, fullName: patient.full_name, phoneNumber: patient.phone_number, documentPhoto: patient.document_photo});
-
-            res.status(201).json({ message: 'Paciente registrado exitosamente', patient });
-            logger.info('Paciente registrado exitosamente', patient);
+        await sendConfirmationEmail({
+            email: patient.email,
+            fullName: patient.full_name,
+            phoneNumber: patient.phone_number,
+            documentPhoto: patient.document_photo
         });
+
+        res.status(201).json({ message: 'Paciente registrado exitosamente', patient });
+        logger.info('Paciente registrado exitosamente', patient);
     } catch (error) {
         console.error(error);
         logger.error('Error al registrar el paciente', error);

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { usePatients } from '../context/patientContext';
-import PatientCard from '../components/PatientCard/PatientCard';
-import AddPatientButton from '../components/AddPatientButton';
+import React, { useState, useEffect } from "react";
+import { usePatients } from "../context/patientContext";
+import PatientCard from "../components/PatientCard/PatientCard";
+import AddPatientButton from "../components/AddPatientButton";
+import PatientForm from "../components/PatientForm/PatientForm";
 
 const Home = () => {
   const { patients, setPage, page, totalPages, loading } = usePatients();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -17,40 +19,43 @@ const Home = () => {
       setPage(page - 1);
     }
   };
-
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   return (
-    <div className="px-4 py-6">
+    <div>
       <div className="headerBar">
         <h1 className="text-3xl font-semibold">Lista de Pacientes</h1>
-        <AddPatientButton /> {/* El botón estará a la derecha */}
+        <AddPatientButton onClick={openModal} />{" "}
       </div>
-      <div className='hero'>
-      {loading ? <p>Cargando...</p> : (
-        <div className='content'>
-          {patients.length > 0 ? patients.map((patient) => (
-            <PatientCard key={patient.id} patient={patient} />
-          )) : 'No hay pacientes'}
+      <div className="hero">
+        {loading ? (
+          <p>Cargando...</p>
+        ) : (
+          <div className="content">
+            {patients.length > 0
+              ? patients.map((patient) => (
+                  <PatientCard key={patient.id} patient={patient} />
+                ))
+              : "No hay pacientes"}
+          </div>
+        )}
+        <div className="pageButtons">
+          <button
+            onClick={handlePreviousPage}
+            disabled={page === 1}
+            className="mr-2"
+          >
+            Anterior
+          </button>
+          <button onClick={handleNextPage} disabled={page === totalPages}>
+            Siguiente
+          </button>
         </div>
-      )}
-
-      <div className="mt-4">
-        <button 
-          onClick={handlePreviousPage} 
-          disabled={page === 1}  // Deshabilitar si estamos en la primera página
-          className="mr-2"
-        >
-          Anterior
-        </button>
-        <button 
-          onClick={handleNextPage} 
-          disabled={page === totalPages}  // Deshabilitar si estamos en la última página
-        >
-          Siguiente
-        </button>
+        <p className="mt-4">
+          Página {page} de {totalPages}
+        </p>{" "}
       </div>
-      
-      <p className="mt-4">Página {page} de {totalPages}</p> {/* Muestra la página actual y el total */}
-    </div>
+      {isModalOpen && <div className="modal"><PatientForm onClose={closeModal} /></div>}
     </div>
   );
 };

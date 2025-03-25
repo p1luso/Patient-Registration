@@ -1,27 +1,10 @@
-import React, { useState } from 'react';
-import PatientForm from './PatientForm/PatientForm';
+import React from 'react';
 
-const AddPatientButton = () => {
-  const [showForm, setShowForm] = useState(false);
-
-  const handleClick = () => {
-    setShowForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-  }
-
+const AddPatientButton = ({ onClick }) => {
   return (
-    <div>
-    <button
-      onClick={handleClick} // Llama a handleClick al hacer clic
-      className="add-patient-button"
-    >
-      Add Patient
+    <button className="add-patient-button" onClick={onClick}>
+      Agregar Paciente
     </button>
-    {showForm && <PatientForm onClose={handleCloseForm} />}
-    </div>
   );
 };
 

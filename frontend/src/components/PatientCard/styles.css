@@ -1,16 +1,16 @@
 .patient-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    transition: all 0.3s ease;
-    margin: 16px;
-    width: 100%;
-  }
-  
-  .patient-card:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  }
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px; /* Máximo ancho de las tarjetas */
+}
+
+.patient-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+}
   
   .patient-card-header {
     display: flex;
@@ -19,6 +19,13 @@
     gap: 16px;
   }
   
+  .patient-card-header img {
+    max-width: 300px;
+    max-height: 200px;
+    object-fit: cover;  /* Esto asegura que la imagen cubra el contenedor sin distorsionarse */
+    aspect-ratio: 16/9; 
+  }
+
   .patient-photo {
     max-width: 300px;
     max-height: 300px;
@@ -56,3 +63,15 @@
     margin: 4px 0;
   }
   
+  @media (max-width: 768px) {
+    .patient-card {
+      width: 45%; /* 2 tarjetas por fila en tablets */
+    }
+  }
+  
+  /* Para móviles */
+  @media (max-width: 480px) {
+    .patient-card {
+      width: 100%; /* 1 tarjeta por fila en móviles */
+    }
+  }

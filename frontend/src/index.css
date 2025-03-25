@@ -20,7 +20,7 @@ body {
 
 .add-patient-button:hover {
   background-color: #93c5fd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
@@ -37,16 +37,56 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  
+}
+
+.modal
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; 
+  position: absolute;
+  top: 30%; 
+  left: 40%;
+  background-color: white;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  width: 30%;
+  height: 30%;
 
 }
 
-.content
-{
+.content {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  gap: 16px;
   margin-top: 2rem;
+}
+
+.pageButtons
+{
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.pageButtons button{
+  background-color: #3b82f6; 
+  border: 1px solid #2d379769;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  margin: 0.5rem;
+}
+
+.pageButtons button:hover{
+  background-color: #93c5fd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+
 }
 
 code {

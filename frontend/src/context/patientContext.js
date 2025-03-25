@@ -31,8 +31,14 @@ export const PatientProvider = ({ children }) => {
     }, [page]);
 
     const newPatient = async (patientData) => {
-        await addPatient(patientData);
-      };
+        const response = await addPatient(patientData);
+        if (response.success) {
+            setPatients(prevPatients => [...prevPatients, response.data]);
+            return { success: true };
+        } else {
+            return { success: false, message: response.message };
+        }
+    };
 
     return (
         <PatientContext.Provider value={{ patients, setPatients, newPatient, fetchPatients, page, setPage, totalPages, loading }}>
