@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: patient_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:nilda1668@db:5432/postgres
+    volumes:
+      - ./backend/:/backend
+      - /backend/node_modules
+    working_dir: /backend
+    command: ["sh", "-c", "sleep 5 && node server.js"]
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nilda1668
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
