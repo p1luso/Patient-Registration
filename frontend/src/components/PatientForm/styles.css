@@ -1,0 +1,60 @@
+.patient-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .patient-form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .patient-form-container h2 {
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+  }
+  
+  .patient-form-container div {
+    margin-bottom: 12px;
+  }
+  
+  .patient-form-container label {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .patient-form-container input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .patient-form-container button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  
+  .patient-form-container button[type="button"] {
+    background-color: #ccc;
+  }
+  
+  .patient-form-container button:hover {
+    background-color: #0056b3;
+  }
+  
