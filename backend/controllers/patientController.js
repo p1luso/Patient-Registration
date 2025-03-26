@@ -15,7 +15,7 @@ const registerPatient = async (req, res) => {
             return res.status(400).json({ message: 'Todos los campos son requeridos y debe incluir una foto' });
         }
 
-        const fileUrl = `${process.env.SERVER_URL}/uploads/${documentPhoto.filename}`;
+        const fileUrl = `http://localhost:5000/uploads/${documentPhoto.filename}`;
 
         const existingPatientQuery = 'SELECT * FROM patients WHERE email = $1 OR phone_number = $2';
         const result = await pool.query(existingPatientQuery, [email, phoneNumber]);
