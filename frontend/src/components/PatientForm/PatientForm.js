@@ -69,6 +69,9 @@ const PatientForm = ({ onClose }) => {
   
       if (response.success) {
         toast.success("Paciente registrado correctamente", { position: "top-right" });
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
         onClose();
       } else {
         toast.error(response.message || "Ocurrió un error inesperado", { position: "top-right" });

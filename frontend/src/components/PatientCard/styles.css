@@ -5,7 +5,7 @@
   padding: 16px;
   transition: all 0.3s ease;
   width: 100%;
-  max-width: 300px; /* Máximo ancho de las tarjetas */
+  max-width: 300px;
 }
 
 .patient-card:hover {
@@ -22,7 +22,7 @@
   .patient-card-header img {
     max-width: 300px;
     max-height: 200px;
-    object-fit: cover;  /* Esto asegura que la imagen cubra el contenedor sin distorsionarse */
+    object-fit: cover;  
     aspect-ratio: 16/9; 
   }
 
@@ -65,13 +65,13 @@
   
   @media (max-width: 768px) {
     .patient-card {
-      width: 45%; /* 2 tarjetas por fila en tablets */
+      width: 45%;
     }
   }
   
   /* Para móviles */
   @media (max-width: 480px) {
     .patient-card {
-      width: 100%; /* 1 tarjeta por fila en móviles */
+      width: 100%;
     }
   }

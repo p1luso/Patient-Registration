@@ -36,7 +36,7 @@ const Home = () => {
               ? patients.map((patient) => (
                   <PatientCard key={patient.id} patient={patient} />
                 ))
-              : "No hay pacientes"}
+              : <div className="noPatients"><h2>"No hay pacientes"</h2><p>No agregaste ningún paciente todavía!</p></div>}
           </div>
         )}
         <div className="pageButtons">

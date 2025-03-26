@@ -8,9 +8,8 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgres://postgres:nilda1668@db:5432/postgres
+    env_file:
+      - .env 
     volumes:
       - ./backend/:/backend
       - /backend/node_modules
@@ -35,9 +34,9 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: nilda1668
-      POSTGRES_DB: postgres
+      POSTGRES_USER: patentregistration_user 
+      POSTGRES_PASSWORD: LupxSVvnzUQhpZvDEXb7nKfcWy5lP2gL 
+      POSTGRES_DB: patentregistration  
     ports:
       - "5432:5432"
     volumes:
