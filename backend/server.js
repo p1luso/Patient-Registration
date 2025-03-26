@@ -3,6 +3,7 @@ const patientRoutes = require('./routes/patientRoutes');
 const logger = require('./logs');
 const cors = require('cors');
 const path = require('path');
+const { Sequelize } = require('sequelize');
 const app = express();
 
 require('dotenv').config();

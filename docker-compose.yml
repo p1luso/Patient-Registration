@@ -8,8 +8,9 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    env_file:
-      - .env 
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://patient_user:patient_password@db:5432/patient_db 
     volumes:
       - ./backend/:/backend
       - /backend/node_modules
@@ -34,13 +35,14 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: patentregistration_user 
-      POSTGRES_PASSWORD: LupxSVvnzUQhpZvDEXb7nKfcWy5lP2gL 
-      POSTGRES_DB: patentregistration  
+      POSTGRES_USER: patient_user
+      POSTGRES_PASSWORD: patient_password
+      POSTGRES_DB: patient_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
 
 volumes:
   postgres_data:
