@@ -8,14 +8,16 @@ const PatientForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phonePrefix: "+54",
     phoneNumber: "",
-    documentPhoto: null, // Cambié esto a null para ser consistente con los archivos
+    documentPhoto: null,
   });
 
   const handleClose = () => {
     setFormData({
       fullName: "",
       email: "",
+      phonePrefix: "+54",
       phoneNumber: "",
       documentPhoto: null,
     });
@@ -35,22 +37,36 @@ const PatientForm = ({ onClose }) => {
   const handleFileChange = (e) => {
     setFormData({
       ...formData,
-      documentPhoto: e.target.files[0], // Asegura que sea el archivo, no solo la ruta
+      documentPhoto: e.target.files[0],
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    if (!formData.email.endsWith("@gmail.com")) {
+      toast.error("El correo debe ser de Gmail", { position: "top-right" });
+  
+      setFormData((prev) => ({
+        ...prev,
+        email: prev.email.split("@")[0] + "@gmail.com",
+      }));
+  
+      return;
+    }
+  
+    const cleanedPhoneNumber = formData.phoneNumber.replace(/\D/g, "");
+    const fullPhoneNumber = `${formData.phonePrefix}${cleanedPhoneNumber}`;
+  
     const formDataToSend = new FormData();
     formDataToSend.append("fullName", formData.fullName);
     formDataToSend.append("email", formData.email);
-    formDataToSend.append("phoneNumber", formData.phoneNumber);
+    formDataToSend.append("phoneNumber", fullPhoneNumber);
     formDataToSend.append("documentPhoto", formData.documentPhoto);
-
+  
     try {
       const response = await newPatient(formDataToSend);
-
+  
       if (response.success) {
         toast.success("Paciente registrado correctamente", { position: "top-right" });
         onClose();
@@ -62,11 +78,12 @@ const PatientForm = ({ onClose }) => {
       toast.error("Ocurrió un error inesperado", { position: "top-right" });
     }
   };
+  
 
   return (
     <div className="patient-form-overlay">
       <div className="patient-form-container">
-        <button 
+        <button
           onClick={handleClose}
           className="close-button"
           style={{
@@ -76,7 +93,7 @@ const PatientForm = ({ onClose }) => {
             background: "transparent",
             border: "none",
             fontSize: "1.5rem",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           &times;
@@ -102,20 +119,45 @@ const PatientForm = ({ onClose }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
+              onInvalid={(e) =>
+                e.target.setCustomValidity("Solo se permiten correos de Gmail")
+              }
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
-          <div>
-            <label htmlFor="phoneNumber">Teléfono</label>
-            <input
-              type="text"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-            />
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <div style={{ flex: "0.3" }}>
+              <label htmlFor="phonePrefix">Prefijo</label>
+              <input
+                type="text"
+                id="phonePrefix"
+                name="phonePrefix"
+                value={formData.phonePrefix}
+                onChange={handleChange}
+                required
+                maxLength="4"
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div style={{ flex: "0.7" }}>
+              <label htmlFor="phoneNumber">Número de Teléfono</label>
+              <input
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/\D/g, "");
+                }}
+                required
+                style={{ width: "100%" }}
+              />
+            </div>
           </div>
+
           <div>
             <label htmlFor="documentPhoto">Foto del Documento</label>
             <input

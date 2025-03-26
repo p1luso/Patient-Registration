@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    build: .
+    build: ./backend
     container_name: patient_api
     ports:
       - "5000:5000"
@@ -17,6 +17,19 @@ services:
     working_dir: /backend
     command: ["sh", "-c", "sleep 5 && node server.js"]
 
+  frontend:
+    build: ./frontend
+    container_name: patient_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    working_dir: /frontend
+    command: ["npm", "start"]
+
   db:
     image: postgres:15
     container_name: postgres_db
@@ -29,7 +42,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
 
 volumes:
   postgres_data:

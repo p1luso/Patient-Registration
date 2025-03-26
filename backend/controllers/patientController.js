@@ -2,15 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const pool = require('../config/db');
 const logger = require('../logs');
-const sendConfirmationEmail = require('../middlewares/mail');
-const upload = require('../middlewares/upload'); // Importa Multer
-
-// Asegurémonos de que el directorio de archivos exista
-const ensureDirectoryExists = (dirPath) => {
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true });
-    }
-};
+const sendConfirmationEmail = require('../middlewares/mailService');
+const upload = require('../middlewares/upload'); 
 
 
 const registerPatient = async (req, res) => {
@@ -22,10 +15,8 @@ const registerPatient = async (req, res) => {
             return res.status(400).json({ message: 'Todos los campos son requeridos y debe incluir una foto' });
         }
 
-        // Ruta donde se guardó la imagen
-        const fileUrl = `http://localhost:5000/uploads/${documentPhoto.filename}`;
+        const fileUrl = `${process.env.SERVER_URL}/uploads/${documentPhoto.filename}`;
 
-        // Verificar si el paciente ya existe
         const existingPatientQuery = 'SELECT * FROM patients WHERE email = $1 OR phone_number = $2';
         const result = await pool.query(existingPatientQuery, [email, phoneNumber]);
 
@@ -33,7 +24,6 @@ const registerPatient = async (req, res) => {
             return res.status(400).json({ message: 'Ya existe un paciente con ese correo electrónico o número de teléfono' });
         }
 
-        // Insertar el paciente en la base de datos
         const insertQuery = 'INSERT INTO patients (full_name, email, phone_number, document_photo) VALUES ($1, $2, $3, $4) RETURNING *';
         const insertResult = await pool.query(insertQuery, [fullName, email, phoneNumber, fileUrl]);
 
@@ -43,7 +33,7 @@ const registerPatient = async (req, res) => {
             email: patient.email,
             fullName: patient.full_name,
             phoneNumber: patient.phone_number,
-            documentPhoto: patient.document_photo
+            documentPhoto: fileUrl
         });
 
         res.status(201).json({ message: 'Paciente registrado exitosamente', patient });
