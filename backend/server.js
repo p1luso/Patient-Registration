@@ -4,12 +4,13 @@ const logger = require('./logs');
 const cors = require('cors');
 const path = require('path');
 const app = express();
+const fs = require('fs');
 
 require('dotenv').config();
 
 const uploads = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+if (!fs.existsSync(uploads)) {
+    fs.mkdirSync(uploads, { recursive: true });
     console.log('Carpeta "uploads" creada.');
     logger.info('Carpeta "uploads" creada.');
 }
